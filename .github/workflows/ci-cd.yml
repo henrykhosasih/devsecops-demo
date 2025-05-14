@@ -36,10 +36,6 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }} .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.sha }}
 
-      - name: Deploy to ECS
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: .aws/task-definition.json
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+      - name: Update ECS service
+        run: |
+          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment
